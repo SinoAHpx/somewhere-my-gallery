@@ -1,18 +1,17 @@
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Display from "@/components/gallery/display";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
 
 export default function Home() {
   return (
     <div className="flex flex-1 items-center justify-center h-full w-full">
-      <div className="flex justify-between">
-        <Button variant={'ghost'} className="h-full">
-          <ChevronLeft/>
+      <div className="flex justify-between items-center h-full w-full">
+        <Button variant={'ghost'} className="h-full w-24">
+          <ChevronLeft />
         </Button>
-        <Image alt="Hateruni" src={'/hateruni.png'} width={1000} height={100} />
-        <Button variant={'ghost'}>
-          <ChevronRight/>
+        <Display title={'Hateruni'}/>
+        <Button variant={'ghost'} className="h-full w-24">
+          <ChevronRight />
         </Button>
       </div>
     </div>
