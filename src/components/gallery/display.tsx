@@ -9,13 +9,14 @@ import {
     DialogTrigger,
 } from "../ui/dialog";
 
-export default function Display({ src = '/hateruni.png', title = 'Photography' }: {
+export default function Display({ src = '/hateruni.png', title = 'Photography', description = 'A beautiful photograph from the collection.' }: {
     src?: string,
-    title?: string
+    title?: string,
+    description?: string
 }) {
     return <>
         <div className="flex flex-col items-center">
-            <Image className="select-none" draggable={false} alt="Hateruni" src={src} width={1000} height={100} />
+            <Image className="select-none" draggable={false} alt={title} src={src} width={1000} height={100} />
             {title &&
                 <Dialog>
                     <DialogTrigger asChild>
@@ -27,7 +28,7 @@ export default function Display({ src = '/hateruni.png', title = 'Photography' }
                         <DialogHeader>
                             <DialogTitle>{title}</DialogTitle>
                             <DialogDescription>
-                                A beautiful photograph from the collection.
+                                {description}
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
