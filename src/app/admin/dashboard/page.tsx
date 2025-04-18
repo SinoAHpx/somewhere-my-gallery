@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -9,19 +9,24 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
-import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
-import { Photo, addPhoto, deletePhoto, getAllPhotos } from "@/lib/photo-service";
+import { usePhotoStore } from "@/store/photo-store";
 
 export default function AdminDashboard() {
-    // State to store photos
-    const [photos, setPhotos] = useState<Photo[]>([]);
+    // Access state and actions from Zustand store
+    const photos = usePhotoStore((state) => state.photos);
+    const addPhoto = usePhotoStore((state) => state.addPhoto);
+    const deletePhotoAction = usePhotoStore((state) => state.deletePhoto); // Renamed to avoid conflict
+    const initializePhotos = usePhotoStore((state) => state.initializePhotos);
 
-    // Load photos on component mount
+    // Load photos on component mount if not already loaded
     useEffect(() => {
-        setPhotos(getAllPhotos());
-    }, []);
+        // Check if photos array is empty before initializing
+        if (photos.length === 0) {
+            initializePhotos();
+        }
+    }, [initializePhotos, photos.length]); // Depend on initializePhotos and photos.length
 
     // Form setup
     const form = useForm({
@@ -34,27 +39,23 @@ export default function AdminDashboard() {
 
     // Handle form submission
     const onSubmit = (data: { title: string; description: string; imageSrc: string }) => {
-        // Add photo using the service
-        const newPhoto = addPhoto({
+        // Add photo using the store action
+        addPhoto({
             title: data.title,
             description: data.description,
             imageSrc: data.imageSrc,
         });
 
-        // Update local state
-        setPhotos([...photos, newPhoto]);
         form.reset();
         toast.success("Photo added successfully");
     };
 
     // Handle photo deletion
     const handleDeletePhoto = (id: string) => {
-        // Delete from service
-        const success = deletePhoto(id);
+        // Delete using the store action
+        const success = deletePhotoAction(id);
 
         if (success) {
-            // Update local state
-            setPhotos(photos.filter((photo) => photo.id !== id));
             toast.success("Photo deleted successfully");
         } else {
             toast.error("Failed to delete photo");
@@ -63,8 +64,6 @@ export default function AdminDashboard() {
 
     return (
         <div className="container mx-auto py-10 space-y-8">
-            <Toaster />
-
             <div className="flex flex-col space-y-2">
                 <h1 className="text-3xl font-bold">Admin Dashboard</h1>
                 <p className="text-muted-foreground">Manage your photography collection</p>
